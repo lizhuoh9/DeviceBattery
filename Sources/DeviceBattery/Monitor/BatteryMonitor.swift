@@ -17,8 +17,9 @@ final class BatteryMonitor {
     var onUpdate: (([DeviceReading]) -> Void)?
 
     private let settings: Settings
-    private let notifier = Notifier()
-    private let watcher = HIDDeviceWatcher()
+    private let strings: Strings
+    private let notifier: Notifier
+    private let watcher: HIDDeviceWatcher
     private let log = Logger(subsystem: "local.DeviceBattery", category: "monitor")
     private var store: ReadingStore
     private var alerts = LowBatteryPolicy()
@@ -31,8 +32,11 @@ final class BatteryMonitor {
     private var lastPublished: [DeviceReading] = []
     private var askedForInputMonitoring = false
 
-    init(settings: Settings) {
+    init(settings: Settings, strings: Strings) {
         self.settings = settings
+        self.strings = strings
+        notifier = Notifier(strings: strings)
+        watcher = HIDDeviceWatcher(strings: strings)
         store = ReadingStore(remembered: settings.remembered)
     }
 
@@ -71,7 +75,7 @@ final class BatteryMonitor {
             for session in watcher.sessions.values.sorted(by: { $0.key < $1.key }) {
                 await read(session)
             }
-            if let bluetooth = await BluetoothSource.read() {
+            if let bluetooth = await BluetoothSource.read(strings: strings) {
                 store.apply(bluetooth, from: BluetoothSource.key)
             }
             lastRefresh = Date()
@@ -145,7 +149,7 @@ final class BatteryMonitor {
         self.timer = timer
     }
 
-    /// Pushes rows to the UI (always, so "3 小时前" stays current); logs, persists and
+    /// Pushes rows to the UI (always, so "3 hr ago" stays current); logs, persists and
     /// alerts only when a level, state or name actually changed.
     private func publish() {
         let rows = store.rows(customNames: settings.customNames, hidden: settings.hidden)
@@ -155,7 +159,7 @@ final class BatteryMonitor {
         lastPublished = rows
         guard !changed.isEmpty else { return }
         for row in changed {
-            // Device names can identify the owner ("某某的 AirPods"), so they stay private.
+            // Device names can identify the owner ("Jane's AirPods"), so they stay private.
             log.notice("\(row.source, privacy: .public) \(row.kind.rawValue, privacy: .public) \(row.name, privacy: .private): \(row.level ?? -1, privacy: .public)% \(row.charge.rawValue, privacy: .public) \(row.status.rawValue, privacy: .public)")
         }
         settings.remembered = store.memorySnapshot

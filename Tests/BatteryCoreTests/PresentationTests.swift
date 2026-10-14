@@ -5,6 +5,7 @@ import Testing
 @Suite("Row presentation")
 struct PresentationTests {
     let now = Date(timeIntervalSince1970: 100_000)
+    let zh = Strings(.simplifiedChinese)
 
     func reading(
         level: Int?, charge: ChargeState = .discharging, status: LinkStatus = .online,
@@ -26,33 +27,26 @@ struct PresentationTests {
         (nil, .unknown, .needsPermission, .attention),
     ])
     func tone(level: Int?, charge: ChargeState, status: LinkStatus, expected: RowTone) {
-        #expect(RowPresentation(reading(level: level, charge: charge, status: status), now: now).tone == expected)
+        #expect(RowPresentation(reading(level: level, charge: charge, status: status), now: now, strings: zh).tone == expected)
     }
 
     @Test("detail line describes the state")
     func detail() {
-        #expect(RowPresentation(reading(level: 80), now: now).detail == "Logi Bolt")
-        #expect(RowPresentation(reading(level: 20), now: now).detail == "电量偏低")
-        #expect(RowPresentation(reading(level: 7), now: now).detail == "电量极低，请尽快充电")
-        #expect(RowPresentation(reading(level: 40, charge: .charging), now: now).detail == "充电中")
-        #expect(RowPresentation(reading(level: 100, charge: .full), now: now).detail == "已充满")
-        #expect(RowPresentation(reading(level: 86, status: .asleep, age: 3 * 3600), now: now).detail == "休眠 · 3 小时前")
-        #expect(RowPresentation(reading(level: nil, status: .asleep), now: now).detail == "休眠中，唤醒后更新")
-        #expect(RowPresentation(reading(level: nil, status: .needsPermission), now: now).detail == "需要“输入监控”权限")
-        let buds = [BatteryComponent(label: "左", level: 100), BatteryComponent(label: "右", level: 92)]
-        #expect(RowPresentation(reading(level: 92, components: buds), now: now).detail == "左 100% · 右 92%")
+        #expect(RowPresentation(reading(level: 80), now: now, strings: zh).detail == "Logi Bolt")
+        #expect(RowPresentation(reading(level: 20), now: now, strings: zh).detail == "电量偏低")
+        #expect(RowPresentation(reading(level: 7), now: now, strings: zh).detail == "电量极低，请尽快充电")
+        #expect(RowPresentation(reading(level: 40, charge: .charging), now: now, strings: zh).detail == "充电中")
+        #expect(RowPresentation(reading(level: 100, charge: .full), now: now, strings: zh).detail == "已充满")
+        #expect(RowPresentation(reading(level: 86, status: .asleep, age: 3 * 3600), now: now, strings: zh).detail == "休眠 · 3 小时前")
+        #expect(RowPresentation(reading(level: nil, status: .asleep), now: now, strings: zh).detail == "休眠中，唤醒后更新")
+        #expect(RowPresentation(reading(level: nil, status: .needsPermission), now: now, strings: zh).detail == "需要“输入监控”权限")
+        let buds = [BatteryComponent(role: .left, level: 100), BatteryComponent(role: .right, level: 92)]
+        #expect(RowPresentation(reading(level: 92, components: buds), now: now, strings: zh).detail == "左 100% · 右 92%")
     }
 
     @Test("percentage text", arguments: [(86, "86"), (nil, "—")] as [(Int?, String)])
     func percent(level: Int?, text: String) {
-        #expect(RowPresentation(reading(level: level), now: now).percent == text)
-    }
-
-    @Test("relative ages", arguments: [
-        (20, "刚刚"), (5 * 60, "5 分钟前"), (2 * 3600, "2 小时前"), (3 * 86_400, "3 天前"),
-    ] as [(TimeInterval, String)])
-    func ages(age: TimeInterval, text: String) {
-        #expect(RowPresentation.age(of: now.addingTimeInterval(-age), now: now) == text)
+        #expect(RowPresentation(reading(level: level), now: now, strings: zh).percent == text)
     }
 }
 

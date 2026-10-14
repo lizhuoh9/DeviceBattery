@@ -21,6 +21,7 @@ mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
 cp "$(swift build -c release --show-bin-path)/DeviceBattery" "$app/Contents/MacOS/DeviceBattery"
 strip -x "$app/Contents/MacOS/DeviceBattery"
 cp Resources/Info.plist "$app/Contents/Info.plist"
+cp -R Resources/*.lproj "$app/Contents/Resources/"
 cp "$work/AppIcon.icns" "$app/Contents/Resources/AppIcon.icns"
 codesign --force --sign - --identifier local.DeviceBattery "$app"
 

@@ -9,11 +9,16 @@ import UserNotifications
 @MainActor
 final class Notifier {
     private let log = Logger(subsystem: "local.DeviceBattery", category: "notifier")
+    private let strings: Strings
+
+    init(strings: Strings) {
+        self.strings = strings
+    }
 
     func post(_ alert: LowBatteryAlert) {
         let content = UNMutableNotificationContent()
-        content.title = "\(alert.name) 电量低"
-        content.body = "剩余 \(alert.level)%，记得充电。"
+        content.title = strings.lowBatteryTitle(alert.name)
+        content.body = strings.lowBatteryBody(alert.level)
         content.sound = .default
         let request = UNNotificationRequest(identifier: "low.\(alert.id).\(alert.threshold)", content: content, trigger: nil)
         let log = log

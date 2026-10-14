@@ -17,6 +17,11 @@ final class HIDDeviceWatcher {
     /// Removal callbacks hand back the same IOHIDDevice object; its service may already be gone.
     private var keysByDevice: [ObjectIdentifier: String] = [:]
     private let manager = IOHIDManagerCreate(kCFAllocatorDefault, IOOptionBits(kIOHIDOptionsTypeNone))
+    private let strings: Strings
+
+    init(strings: Strings) {
+        self.strings = strings
+    }
 
     private static let matching: [[String: Int]] = [
         [kIOHIDVendorIDKey: HIDPP.vendorID, kIOHIDPrimaryUsagePageKey: HIDPP.usagePage],
@@ -43,7 +48,7 @@ final class HIDDeviceWatcher {
     }
 
     private func added(_ device: IOHIDDevice) {
-        guard let session = ReceiverSession.make(for: device), sessions[session.key] == nil else { return }
+        guard let session = ReceiverSession.make(for: device, strings: strings), sessions[session.key] == nil else { return }
         sessions[session.key] = session
         keysByDevice[ObjectIdentifier(device)] = session.key
         onChange?(.added(session))

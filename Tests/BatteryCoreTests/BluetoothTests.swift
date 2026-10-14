@@ -5,6 +5,7 @@ import Testing
 @Suite("Bluetooth parsing")
 struct BluetoothTests {
     let date = Date(timeIntervalSince1970: 4_000)
+    let zh = Strings(.simplifiedChinese)
 
     static let profilerJSON = """
     {"SPBluetoothDataType": [{
@@ -37,9 +38,9 @@ struct BluetoothTests {
         #expect(airPods.symbol == "airpods")
         #expect(airPods.level == 92)
         #expect(airPods.components == [
-            BatteryComponent(label: "左", level: 100),
-            BatteryComponent(label: "右", level: 92),
-            BatteryComponent(label: "盒", level: 41),
+            BatteryComponent(role: .left, level: 100),
+            BatteryComponent(role: .right, level: 92),
+            BatteryComponent(role: .chargingCase, level: 41),
         ])
     }
 
@@ -48,7 +49,7 @@ struct BluetoothTests {
         let mouse = try #require(BluetoothProfileParser.parse(Data(Self.profilerJSON.utf8), now: date).last)
         #expect(mouse == DeviceReading(
             id: "bt.AA:BB:CC:DD:EE:01", name: "Magic Mouse", kind: .mouse, level: 85,
-            status: .online, symbol: "magicmouse", source: "蓝牙", date: date
+            status: .online, symbol: "magicmouse", source: "Bluetooth", date: date
         ))
     }
 
@@ -63,13 +64,13 @@ struct BluetoothTests {
             "Product": "Magic Keyboard", "BatteryPercent": 64, "BatteryStatusFlags": 3,
             "DeviceAddress": "aa-bb-cc-dd-ee-02",
         ]
-        let reading = try #require(RegistryBatteryParser.reading(from: properties, now: date))
+        let reading = try #require(RegistryBatteryParser.reading(from: properties, now: date, strings: zh))
         #expect(reading.id == "bt.AA:BB:CC:DD:EE:02")
         #expect(reading.kind == .keyboard)
         #expect(reading.level == 64)
         #expect(reading.charge == .charging)
-        #expect(RegistryBatteryParser.reading(from: ["Product": "X"], now: date) == nil)
-        #expect(RegistryBatteryParser.reading(from: ["Product": "X", "BatteryPercent": 50, "Built-In": true], now: date) == nil)
+        #expect(RegistryBatteryParser.reading(from: ["Product": "X"], now: date, strings: zh) == nil)
+        #expect(RegistryBatteryParser.reading(from: ["Product": "X", "BatteryPercent": 50, "Built-In": true], now: date, strings: zh) == nil)
     }
 
     @Test("merging prefers the live IOKit level but keeps the Bluetooth name")

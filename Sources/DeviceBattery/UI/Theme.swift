@@ -4,7 +4,7 @@ import BatteryCore
 /// Sizes, fonts and colors of the widget in one place.
 @MainActor
 enum Theme {
-    static let width: CGFloat = 264
+    static let width: CGFloat = 284
     static let cornerRadius: CGFloat = 20
     static let outerPadding: CGFloat = 8
     static let rowHeight: CGFloat = 46

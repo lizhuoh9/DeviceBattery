@@ -66,9 +66,10 @@ struct CompxProtocolTests {
 
     @Test("cleans the dongle's USB name into a device name")
     func displayName() {
-        #expect(CompxProtocol.displayName(forProduct: "Wireless mouse 8k dongle-L") == "Wireless mouse 8k")
-        #expect(CompxProtocol.displayName(forProduct: "ATK Dongle") == "ATK")
-        #expect(CompxProtocol.displayName(forProduct: "  ") == "无线鼠标")
+        let zh = Strings(.simplifiedChinese)
+        #expect(CompxProtocol.displayName(forProduct: "Wireless mouse 8k dongle-L", strings: zh) == "Wireless mouse 8k")
+        #expect(CompxProtocol.displayName(forProduct: "ATK Dongle", strings: zh) == "ATK")
+        #expect(CompxProtocol.displayName(forProduct: "  ", strings: zh) == "无线鼠标")
     }
 }
 

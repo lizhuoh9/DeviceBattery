@@ -40,14 +40,15 @@ final class ReceiverSession {
     }
 
     /// Builds a session for `device` when it is an interface we know how to query.
-    static func make(for device: IOHIDDevice) -> ReceiverSession? {
+    static func make(for device: IOHIDDevice, strings: Strings) -> ReceiverSession? {
         let info = HIDDeviceInfo(device)
         let key = "hid.\(info.registryID)"
 
         if info.vendorID == HIDPP.vendorID, info.usagePage == HIDPP.usagePage, (0xC500...0xC5FF).contains(info.productID) {
             let channel = IOHIDReportChannel(device: device)
             let reader = LogitechReceiverReader(
-                channel: channel, receiver: LogitechReceiverKind(productID: info.productID), receiverID: info.stableID
+                channel: channel, receiver: LogitechReceiverKind(productID: info.productID),
+                receiverID: info.stableID, strings: strings
             )
             let session = ReceiverSession(key: key, channel: channel, reader: reader, keepsOpen: true)
             channel.onUnsolicitedReport = { [weak session, weak reader] report in
@@ -58,7 +59,7 @@ final class ReceiverSession {
         if info.vendorID == AsusOmniProtocol.vendorID, info.productID == AsusOmniProtocol.receiverProductID,
            info.usagePage == AsusOmniProtocol.usagePage {
             let channel = IOHIDReportChannel(device: device)
-            let reader = AsusOmniReader(channel: channel, receiverID: info.stableID)
+            let reader = AsusOmniReader(channel: channel, receiverID: info.stableID, strings: strings)
             return ReceiverSession(key: key, channel: channel, reader: reader, keepsOpen: false)
         }
         if CompxProtocol.isBatteryInterface(
@@ -67,7 +68,8 @@ final class ReceiverSession {
         ) {
             let channel = IOHIDReportChannel(device: device)
             let reader = CompxReader(
-                channel: channel, id: "compx.\(info.stableID)", name: CompxProtocol.displayName(forProduct: info.product)
+                channel: channel, id: "compx.\(info.stableID)",
+                name: CompxProtocol.displayName(forProduct: info.product, strings: strings)
             )
             return ReceiverSession(key: key, channel: channel, reader: reader, keepsOpen: false)
         }

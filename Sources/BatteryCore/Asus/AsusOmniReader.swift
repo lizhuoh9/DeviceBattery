@@ -8,14 +8,16 @@ public final class AsusOmniReader: BatteryReader {
 
     private let channel: ReportChannel
     private let receiverID: String
+    private let strings: Strings
     private let now: () -> Date
     /// Device classes learned from the command each product answered.
     private var learnedKinds: [UInt16: DeviceKind] = [:]
     private var lastPaired: [UInt16] = []
 
-    public init(channel: ReportChannel, receiverID: String, now: @escaping () -> Date = Date.init) {
+    public init(channel: ReportChannel, receiverID: String, strings: Strings, now: @escaping () -> Date = Date.init) {
         self.channel = channel
         self.receiverID = receiverID
+        self.strings = strings
         self.now = now
     }
 
@@ -83,17 +85,10 @@ public final class AsusOmniReader: BatteryReader {
     ) -> DeviceReading {
         DeviceReading(
             id: "rog.\(receiverID).\(String(format: "%04X", productID))",
-            name: AsusOmniProtocol.model(for: productID)?.name ?? Self.genericName(for: kind),
+            name: AsusOmniProtocol.model(for: productID)?.name ?? strings.rogDevice(kind: kind),
             kind: kind, level: level, charge: charge, status: status,
             source: Self.source, date: now()
         )
     }
 
-    private static func genericName(for kind: DeviceKind) -> String {
-        switch kind {
-        case .mouse: "ROG 无线鼠标"
-        case .keyboard: "ROG 无线键盘"
-        default: "ROG 无线设备"
-        }
-    }
 }

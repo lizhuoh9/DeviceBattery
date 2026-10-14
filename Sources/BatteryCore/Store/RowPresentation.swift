@@ -16,11 +16,11 @@ public struct RowPresentation: Equatable, Sendable {
     /// 0...1 for the ring; nil draws an empty ring.
     public let fraction: Double?
 
-    public init(_ reading: DeviceReading, now: Date) {
+    public init(_ reading: DeviceReading, now: Date, strings: Strings) {
         percent = reading.level.map(String.init) ?? "—"
         fraction = reading.level.map { Double($0) / 100 }
         tone = Self.tone(of: reading)
-        detail = Self.detail(of: reading, now: now)
+        detail = Self.detail(of: reading, now: now, strings: strings)
     }
 
     private static func tone(of reading: DeviceReading) -> RowTone {
@@ -36,36 +36,26 @@ public struct RowPresentation: Equatable, Sendable {
         return .normal
     }
 
-    private static func detail(of reading: DeviceReading, now: Date) -> String {
+    private static func detail(of reading: DeviceReading, now: Date, strings: Strings) -> String {
         switch reading.status {
         case .needsPermission:
-            return "需要“输入监控”权限"
+            return strings.needsInputMonitoring
         case .asleep:
-            return reading.level == nil ? "休眠中，唤醒后更新" : "休眠 · \(age(of: reading.date, now: now))"
+            guard reading.level != nil else { return strings.asleepUntilWake }
+            return strings.asleep(since: strings.age(of: reading.date, now: now))
         case .online:
             break
         }
         switch reading.charge {
-        case .charging: return "充电中"
-        case .full: return "已充满"
+        case .charging: return strings.charging
+        case .full: return strings.fullyCharged
         default: break
         }
         if !reading.components.isEmpty {
-            return reading.components.map { "\($0.label) \($0.level)%" }.joined(separator: " · ")
+            return reading.components.map { "\(strings.component($0.role)) \($0.level)%" }.joined(separator: " · ")
         }
-        if let level = reading.level, level <= criticalThreshold { return "电量极低，请尽快充电" }
-        if let level = reading.level, level <= lowThreshold { return "电量偏低" }
-        return reading.source
-    }
-
-    /// "刚刚", "5 分钟前", "2 小时前", "3 天前".
-    public static func age(of date: Date, now: Date) -> String {
-        let seconds = max(0, now.timeIntervalSince(date))
-        switch seconds {
-        case ..<60: return "刚刚"
-        case ..<3600: return "\(Int(seconds / 60)) 分钟前"
-        case ..<86_400: return "\(Int(seconds / 3600)) 小时前"
-        default: return "\(Int(seconds / 86_400)) 天前"
-        }
+        if let level = reading.level, level <= criticalThreshold { return strings.criticalBattery }
+        if let level = reading.level, level <= lowThreshold { return strings.lowBattery }
+        return strings.source(reading.source)
     }
 }

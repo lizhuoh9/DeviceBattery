@@ -58,10 +58,10 @@ public enum CompxProtocol {
     }
 
     /// Turns the dongle's USB product string into a device name.
-    public static func displayName(forProduct product: String) -> String {
+    public static func displayName(forProduct product: String, strings: Strings) -> String {
         let cleaned = product
             .replacingOccurrences(of: #"(?i)\s*dongle(-\w+)?\s*$"#, with: "", options: .regularExpression)
             .trimmingCharacters(in: .whitespaces)
-        return cleaned.isEmpty ? "无线鼠标" : cleaned
+        return cleaned.isEmpty ? strings.wirelessMouse : cleaned
     }
 }

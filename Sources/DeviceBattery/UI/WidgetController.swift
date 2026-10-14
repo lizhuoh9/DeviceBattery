@@ -6,13 +6,16 @@ import BatteryCore
 final class WidgetController: NSObject {
     private let settings: Settings
     private let monitor: BatteryMonitor
-    private let content = WidgetContentView()
+    private let strings: Strings
+    private let content: WidgetContentView
     private lazy var panel = WidgetPanel(content: content)
     private var rows: [DeviceReading] = []
 
-    init(settings: Settings, monitor: BatteryMonitor) {
+    init(settings: Settings, monitor: BatteryMonitor, strings: Strings) {
         self.settings = settings
         self.monitor = monitor
+        self.strings = strings
+        content = WidgetContentView(strings: strings)
     }
 
     func start() {
@@ -51,25 +54,25 @@ final class WidgetController: NSObject {
 
     private func menu(for reading: DeviceReading?) -> NSMenu {
         let menu = NSMenu()
-        menu.addItem(item("立即刷新", #selector(refresh)))
+        menu.addItem(item(strings.refreshNow, #selector(refresh)))
         if let reading {
             menu.addItem(.separator())
-            menu.addItem(item("重命名“\(reading.name)”…", #selector(rename), id: reading.id))
-            menu.addItem(item("隐藏“\(reading.name)”", #selector(hide), id: reading.id))
+            menu.addItem(item(strings.rename(reading.name), #selector(rename), id: reading.id))
+            menu.addItem(item(strings.hide(reading.name), #selector(hide), id: reading.id))
             if reading.status == .needsPermission {
-                menu.addItem(item("打开“输入监控”设置…", #selector(openInputMonitoring)))
+                menu.addItem(item(strings.openInputMonitoring, #selector(openInputMonitoring)))
             }
         }
         let hiddenCount = settings.hidden.count
         if hiddenCount > 0 {
-            menu.addItem(item("显示已隐藏的设备（\(hiddenCount)）", #selector(showHidden)))
+            menu.addItem(item(strings.showHidden(hiddenCount), #selector(showHidden)))
         }
         menu.addItem(.separator())
-        menu.addItem(item("置于其他窗口之上", #selector(toggleOnTop), on: settings.alwaysOnTop))
-        menu.addItem(item("低电量提醒", #selector(toggleAlerts), on: settings.lowBatteryAlerts))
-        menu.addItem(item("登录时打开", #selector(toggleLoginItem), on: LoginItem.isEnabled))
+        menu.addItem(item(strings.keepOnTop, #selector(toggleOnTop), on: settings.alwaysOnTop))
+        menu.addItem(item(strings.lowBatteryAlerts, #selector(toggleAlerts), on: settings.lowBatteryAlerts))
+        menu.addItem(item(strings.openAtLogin, #selector(toggleLoginItem), on: LoginItem.isEnabled))
         menu.addItem(.separator())
-        menu.addItem(item("退出", #selector(quit)))
+        menu.addItem(item(strings.quit, #selector(quit)))
         return menu
     }
 
@@ -89,13 +92,13 @@ final class WidgetController: NSObject {
         guard let id = sender.representedObject as? String,
               let reading = rows.first(where: { $0.id == id }) else { return }
         let alert = NSAlert()
-        alert.messageText = "重命名设备"
-        alert.informativeText = "留空则恢复默认名称。"
+        alert.messageText = strings.renameTitle
+        alert.informativeText = strings.renameHint
         let field = NSTextField(string: settings.customNames[id] ?? reading.name)
         field.frame = NSRect(x: 0, y: 0, width: 260, height: 24)
         alert.accessoryView = field
-        alert.addButton(withTitle: "好")
-        alert.addButton(withTitle: "取消")
+        alert.addButton(withTitle: strings.ok)
+        alert.addButton(withTitle: strings.cancel)
         alert.window.initialFirstResponder = field
         NSApp.activate()
         guard alert.runModal() == .alertFirstButtonReturn else { return }
@@ -132,7 +135,7 @@ final class WidgetController: NSObject {
             try LoginItem.setEnabled(!LoginItem.isEnabled)
         } catch {
             let alert = NSAlert(error: error)
-            alert.messageText = "无法更改“登录时打开”"
+            alert.messageText = strings.loginItemError
             NSApp.activate()
             alert.runModal()
         }

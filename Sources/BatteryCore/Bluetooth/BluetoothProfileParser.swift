@@ -5,12 +5,13 @@ import Foundation
 /// Only connected devices that report at least one battery level are kept.
 /// AirPods-style devices report left/right/case; everything else a single "Main" level.
 public enum BluetoothProfileParser {
-    static let source = "蓝牙"
+    /// Source of Bluetooth readings; `Strings.source(_:)` translates it for display.
+    public static let source = "Bluetooth"
 
-    private static let levelKeys: [(key: String, label: String)] = [
-        ("device_batteryLevelLeft", "左"),
-        ("device_batteryLevelRight", "右"),
-        ("device_batteryLevelCase", "盒"),
+    private static let levelKeys: [(key: String, role: BatteryComponent.Role)] = [
+        ("device_batteryLevelLeft", .left),
+        ("device_batteryLevelRight", .right),
+        ("device_batteryLevelCase", .chargingCase),
     ]
 
     public static func parse(_ data: Data, now: Date) -> [DeviceReading] {
@@ -31,11 +32,11 @@ public enum BluetoothProfileParser {
 
     private static func reading(name: String, info: Any, now: Date) -> DeviceReading? {
         guard let info = info as? [String: Any], let address = info["device_address"] as? String else { return nil }
-        let components = levelKeys.compactMap { key, label in
-            percent(info[key]).map { BatteryComponent(label: label, level: $0) }
+        let components = levelKeys.compactMap { key, role in
+            percent(info[key]).map { BatteryComponent(role: role, level: $0) }
         }
         let main = percent(info["device_batteryLevelMain"]) ?? percent(info["device_batteryLevel"])
-        let buds = components.filter { $0.label != "盒" }.map(\.level)
+        let buds = components.filter { $0.role != .chargingCase }.map(\.level)
         guard let level = main ?? buds.min() ?? components.first?.level else { return nil }
 
         let minorType = info["device_minorType"] as? String ?? ""
@@ -79,14 +80,12 @@ public enum BluetoothProfileParser {
 /// Reads an IOKit service that publishes `BatteryPercent` (Apple Magic accessories and
 /// other HID devices the OS tracks a battery for).
 public enum RegistryBatteryParser {
-    static let source = "蓝牙"
-
-    public static func reading(from properties: [String: Any], now: Date) -> DeviceReading? {
+    public static func reading(from properties: [String: Any], now: Date, strings: Strings) -> DeviceReading? {
         // Built-in services (the Mac's own parts) are not accessories.
         guard let level = properties["BatteryPercent"] as? Int, properties["Built-In"] as? Bool != true else {
             return nil
         }
-        let name = properties["Product"] as? String ?? "蓝牙设备"
+        let name = properties["Product"] as? String ?? strings.bluetoothDevice
         let flags = properties["BatteryStatusFlags"] as? Int ?? 0
         let address = (properties["DeviceAddress"] as? String)?
             .replacingOccurrences(of: "-", with: ":").uppercased()
@@ -96,7 +95,7 @@ public enum RegistryBatteryParser {
             id: address.map { "bt.\($0)" } ?? "hid.\(name)", name: name, kind: kind, level: level,
             charge: .from(charging: flags & 0x02 != 0, level: level), status: .online,
             symbol: BluetoothProfileParser.symbol(kind: kind, name: name, isApple: isApple),
-            source: source, date: now
+            source: BluetoothProfileParser.source, date: now
         )
     }
 }

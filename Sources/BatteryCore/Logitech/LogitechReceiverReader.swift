@@ -30,6 +30,7 @@ public final class LogitechReceiverReader: BatteryReader {
     private let channel: ReportChannel
     private let receiver: LogitechReceiverKind
     private let receiverID: String
+    private let strings: Strings
     private let now: () -> Date
     private var slots: [PairedSlot] = []
     private var discoveredAt: Date?
@@ -41,11 +42,13 @@ public final class LogitechReceiverReader: BatteryReader {
         channel: ReportChannel,
         receiver: LogitechReceiverKind,
         receiverID: String,
+        strings: Strings,
         now: @escaping () -> Date = Date.init
     ) {
         self.channel = channel
         self.receiver = receiver
         self.receiverID = receiverID
+        self.strings = strings
         self.now = now
     }
 
@@ -243,7 +246,7 @@ public final class LogitechReceiverReader: BatteryReader {
         let identity = identities[id(of: slot)]
         return DeviceReading(
             id: id(of: slot),
-            name: identity?.name ?? slot.codename ?? "Logitech 设备",
+            name: identity?.name ?? slot.codename ?? strings.logitechDevice,
             kind: identity?.kind ?? slot.kind,
             level: battery?.level,
             charge: battery?.charge ?? .unknown,

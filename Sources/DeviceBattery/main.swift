@@ -1,4 +1,5 @@
 import AppKit
+import BatteryCore
 
 /// Starts the widget. The app has no Dock icon or menu bar (LSUIElement);
 /// everything lives in the widget's right-click menu.
@@ -8,7 +9,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         let settings = Settings()
-        let controller = WidgetController(settings: settings, monitor: BatteryMonitor(settings: settings))
+        let strings = Strings.current
+        let controller = WidgetController(
+            settings: settings, monitor: BatteryMonitor(settings: settings, strings: strings), strings: strings
+        )
         controller.start()
         self.controller = controller
     }

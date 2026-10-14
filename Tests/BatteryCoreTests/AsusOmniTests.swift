@@ -71,7 +71,7 @@ struct AsusOmniReaderTests {
     static let pairedMouse = report([0x01, 0xA0, 0, 0x01, 0, 0x65, 0x1B, 0x01, 0x04], length: 64)
 
     func reader(_ channel: FakeChannel) -> AsusOmniReader {
-        AsusOmniReader(channel: channel, receiverID: "OMNI0000TEST", now: { self.date })
+        AsusOmniReader(channel: channel, receiverID: "OMNI0000TEST", strings: Strings(.simplifiedChinese), now: { self.date })
     }
 
     @Test("an unknown device is identified by the command it answers")

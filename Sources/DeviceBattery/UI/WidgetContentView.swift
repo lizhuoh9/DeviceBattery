@@ -16,11 +16,14 @@ final class WidgetContentView: NSView {
 
     private static let dragThreshold: CGFloat = 3
 
+    private let strings: Strings
     private let stack = NSStackView()
-    private let emptyLabel = NSTextField(labelWithString: "没有发现无线设备")
+    private let emptyLabel: NSTextField
     private var rows: [DeviceRowView] = []
 
-    init(surface: Surface = .glass) {
+    init(strings: Strings, surface: Surface = .glass) {
+        self.strings = strings
+        emptyLabel = NSTextField(labelWithString: strings.noDevices)
         super.init(frame: .zero)
         let content = NSView()
         installBackground(around: content, surface: surface)
@@ -59,7 +62,7 @@ final class WidgetContentView: NSView {
     func show(_ readings: [DeviceReading], now: Date) {
         let existing = Dictionary(rows.compactMap { row in row.reading.map { ($0.id, row) } }, uniquingKeysWith: { first, _ in first })
         let updated = readings.map { reading in
-            let row = existing[reading.id] ?? DeviceRowView()
+            let row = existing[reading.id] ?? DeviceRowView(strings: strings)
             row.update(with: reading, now: now)
             return row
         }

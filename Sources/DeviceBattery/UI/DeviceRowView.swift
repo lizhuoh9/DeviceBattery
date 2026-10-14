@@ -4,6 +4,7 @@ import BatteryCore
 /// One device: ring gauge, name with a status line, and the percentage.
 final class DeviceRowView: NSView {
     private(set) var reading: DeviceReading?
+    private let strings: Strings
     private let ring = BatteryRingView()
     private let nameLabel = NSTextField(labelWithString: "")
     private let detailLabel = NSTextField(labelWithString: "")
@@ -13,8 +14,9 @@ final class DeviceRowView: NSView {
         didSet { updateHighlight() }
     }
 
-    override init(frame: NSRect) {
-        super.init(frame: frame)
+    init(strings: Strings) {
+        self.strings = strings
+        super.init(frame: .zero)
         wantsLayer = true
         highlight.cornerRadius = Theme.rowCornerRadius
         highlight.cornerCurve = .continuous
@@ -31,7 +33,7 @@ final class DeviceRowView: NSView {
     func update(with reading: DeviceReading, now: Date) {
         let isSameDevice = self.reading?.id == reading.id
         self.reading = reading
-        let presentation = RowPresentation(reading, now: now)
+        let presentation = RowPresentation(reading, now: now, strings: strings)
         nameLabel.stringValue = reading.name
         detailLabel.stringValue = presentation.detail
         detailLabel.textColor = Theme.detailColor(for: presentation.tone)
@@ -40,8 +42,9 @@ final class DeviceRowView: NSView {
             fraction: presentation.fraction, tone: presentation.tone,
             symbol: Theme.symbol(for: reading), animated: isSameDevice
         )
-        toolTip = "\(reading.name)\n\(reading.source) · 更新于 \(RowPresentation.age(of: reading.date, now: now))"
-        setAccessibilityLabel("\(reading.name)，\(reading.level.map { "电量 \($0)%" } ?? "电量未知")，\(presentation.detail)")
+        let source = strings.source(reading.source)
+        toolTip = "\(reading.name)\n\(strings.tooltip(source: source, age: strings.age(of: reading.date, now: now)))"
+        setAccessibilityLabel(strings.accessibilityLabel(name: reading.name, level: reading.level, detail: presentation.detail))
     }
 
     /// The row handles the mouse as a whole; clicks and drags bubble up to the widget.

@@ -22,11 +22,15 @@ public enum LinkStatus: String, Codable, Sendable {
 
 /// One battery inside a multi-battery device, e.g. an AirPods bud or its case.
 public struct BatteryComponent: Codable, Equatable, Sendable {
-    public let label: String
+    public enum Role: String, Codable, Sendable {
+        case left, right, chargingCase
+    }
+
+    public let role: Role
     public let level: Int
 
-    public init(label: String, level: Int) {
-        self.label = label
+    public init(role: Role, level: Int) {
+        self.role = role
         self.level = level
     }
 }

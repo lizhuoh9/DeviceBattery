@@ -10,15 +10,15 @@ enum BluetoothSource {
     private static let profilerKillDelay: TimeInterval = 2
 
     /// Current Bluetooth readings; nil when system_profiler failed, so the previous ones stay.
-    static func read() async -> [DeviceReading]? {
+    static func read(strings: Strings) async -> [DeviceReading]? {
         let now = Date()
         guard let data = await runProfiler() else { return nil }
         let profiled = BluetoothProfileParser.parse(data, now: now)
-        return BluetoothProfileParser.merge(registry: registryReadings(now: now), profiler: profiled)
+        return BluetoothProfileParser.merge(registry: registryReadings(now: now, strings: strings), profiler: profiled)
     }
 
     /// Services that publish `BatteryPercent`; a cheap in-process registry lookup.
-    private static func registryReadings(now: Date) -> [DeviceReading] {
+    private static func registryReadings(now: Date, strings: Strings) -> [DeviceReading] {
         var iterator: io_iterator_t = 0
         let matching = ["IOPropertyExistsMatch": "BatteryPercent"] as CFDictionary
         guard IOServiceGetMatchingServices(kIOMainPortDefault, matching, &iterator) == KERN_SUCCESS else { return [] }
@@ -30,7 +30,7 @@ enum BluetoothSource {
             var properties: Unmanaged<CFMutableDictionary>?
             guard IORegistryEntryCreateCFProperties(service, &properties, kCFAllocatorDefault, 0) == KERN_SUCCESS,
                   let dictionary = properties?.takeRetainedValue() as? [String: Any],
-                  let reading = RegistryBatteryParser.reading(from: dictionary, now: now) else { continue }
+                  let reading = RegistryBatteryParser.reading(from: dictionary, now: now, strings: strings) else { continue }
             readings[reading.id] = reading
         }
         return Array(readings.values)

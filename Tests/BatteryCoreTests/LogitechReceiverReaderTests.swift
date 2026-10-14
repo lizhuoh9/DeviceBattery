@@ -50,7 +50,9 @@ struct LogitechReceiverReaderTests {
 
     func reader(_ kind: LogitechReceiverKind = .bolt) -> (LogitechReceiverReader, FakeChannel) {
         let channel = FakeChannel { [device] in device.respond($0) }
-        let reader = LogitechReceiverReader(channel: channel, receiver: kind, receiverID: "loc1130000", now: { self.date })
+        let reader = LogitechReceiverReader(
+            channel: channel, receiver: kind, receiverID: "loc1130000", strings: Strings(.simplifiedChinese), now: { self.date }
+        )
         return (reader, channel)
     }
 
