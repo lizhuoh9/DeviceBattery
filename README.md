@@ -1,108 +1,112 @@
 # Device Battery
 
-一个轻量的 macOS 桌面挂件，一眼看到无线鼠标、键盘、耳机的电量。
+**English** | [한국어](README.ko.md) | [简体中文](README.zh-CN.md)
 
-*A lightweight macOS desktop widget that shows the battery of your wireless mice, keyboards and headphones — including 2.4 GHz receivers (Logitech Bolt/Unifying, ROG Omni, Compx 8K dongles) that macOS itself cannot read.*
+A lightweight macOS desktop widget that shows, at a glance, the battery of your wireless mice, keyboards and headphones — including 2.4 GHz receivers that macOS itself cannot read.
 
-![Device Battery 预览](docs/preview.png)
+![Device Battery preview](docs/preview-en.png)
 
-<sub>示意图：浅色 / 深色外观。实际使用时背景是 macOS 的玻璃材质，会透出桌面壁纸。</sub>
+<sub>Light and dark appearance. On your Mac the background is macOS glass, so your wallpaper shows through.</sub>
 
-## 它能做什么
+## Features
 
-- **读出 macOS 读不到的电量**：罗技 Bolt / Unifying 接收器、ROG Omni 接收器、Compx 芯片的 4K/8K 鼠标接收器，直接和接收器通信读取电量。
-- **蓝牙设备也一起显示**：AirPods（左耳、右耳、充电盒分开显示）、妙控键盘 / 鼠标 / 触控板，以及其他向 macOS 报告电量的蓝牙设备。
-- **设备休眠也知道电量**：显示最后一次读到的电量和时间，例如「休眠 · 3 小时前」。
-- **低电量提醒**：电量降到 20% 和 10% 时各发一次系统通知。
-- **足够轻**：原生 Swift，无第三方依赖。App 不到 1 MB，常驻内存约 20 MB，平时 CPU 占用约 0%。
-- **不打扰**：挂件待在桌面层（普通窗口下面），所有桌面空间都显示，不抢焦点，没有 Dock 图标。
+- **Reads batteries macOS can't**: talks directly to Logitech Bolt / Unifying receivers, the ROG Omni receiver and Compx-chip 4K/8K mouse dongles.
+- **Bluetooth devices too**: AirPods (left, right and case shown separately), Magic Keyboard / Mouse / Trackpad, and any other Bluetooth device that reports its battery to macOS.
+- **Knows the level even when a device sleeps**: shows the last level read and when, e.g. "Asleep · 3 hr ago".
+- **Low battery alerts**: one notification at 20% and another at 10%.
+- **Light**: native Swift, no third-party dependencies. The app is under 1 MB, uses about 20 MB of memory and ~0% CPU when idle.
+- **Unobtrusive**: sits on the desktop layer (below your windows), shows on every Space, never steals focus, no Dock icon.
+- **Speaks your language**: English, 한국어 and 简体中文, following your macOS language.
 
-## 支持的设备
+## Supported devices
 
-| 连接方式 | 设备举例 | 读取方式 |
+| Connection | Examples | How it reads the battery |
 | --- | --- | --- |
-| 罗技 Logi Bolt / Unifying 及其他罗技接收器 | MX Keys、MX Master、G 系列 | HID++ 2.0（与 Logi Options+ 相同的协议） |
-| ROG Omni 接收器 | ROG 鼠标、ROG 键盘 | ROG 厂商指令 |
-| Compx 芯片 2.4G 接收器 | ATK、VXE 等 4K/8K 无线鼠标 | Compx 厂商指令 |
-| 蓝牙 | AirPods、妙控键盘 / 鼠标 / 触控板等 | macOS 自带的电量信息 |
+| Logitech Logi Bolt / Unifying and other Logitech receivers | MX Keys, MX Master, G series | HID++ 2.0 (the protocol Logi Options+ uses) |
+| ROG Omni receiver | ROG mice and keyboards | ROG vendor commands |
+| Compx-chip 2.4 GHz receivers | ATK, VXE and other 4K/8K wireless mice | Compx vendor commands |
+| Bluetooth | AirPods, Magic Keyboard / Mouse / Trackpad, … | Battery information macOS already has |
 
-挂件只向设备发送「查询电量」一类的读取指令，不会修改任何设备设置。
+The widget only sends read-only "battery status" queries and never changes any device setting.
 
-## 安装（3 步）
+## Install (3 steps)
 
-需要 macOS 14 或更新版本。目前没有现成的安装包，需要在自己的 Mac 上编译一次。编译出来的 App 不会被 macOS 拦截，双击就能打开。
+Requires macOS 14 or later. There is no prebuilt download yet: you build the app once on your own Mac. An app built on your Mac is not blocked by Gatekeeper, so it opens with a double-click.
 
-**第 1 步：安装编译工具**
+**Step 1: install the build tools**
 
-打开「终端」（启动台 → 其他 → 终端），粘贴下面这行并回车，然后在弹出的窗口里点「安装」：
+Open **Terminal** (Launchpad → Other → Terminal), paste this line and press Return, then click **Install** in the window that appears:
 
 ```bash
 xcode-select --install
 ```
 
-如果提示已经安装过，直接进行下一步。编译需要 Swift 6.2 或更新的版本（Xcode 26 或 Command Line Tools 26 起），可以用 `swift --version` 查看。
+If it says the tools are already installed, go to the next step. Building needs Swift 6.2 or later (Xcode 26 or Command Line Tools 26 and newer); `swift --version` shows yours.
 
-**第 2 步：下载源码**
+**Step 2: download the source**
 
 ```bash
 git clone https://github.com/lizhuoh9/DeviceBattery.git
 cd DeviceBattery
 ```
 
-也可以在本页点击绿色的 **Code → Download ZIP**，解压后在终端里 `cd` 进解压出来的文件夹。
+Or click the green **Code → Download ZIP** button on this page, unzip it, and `cd` into the unzipped folder in Terminal.
 
-**第 3 步：编译并安装**
+**Step 3: build and install**
 
 ```bash
 ./scripts/install.sh
 ```
 
-第一次编译大约需要 1 分钟。完成后 App 会被装到「应用程序」文件夹并自动启动，挂件出现在屏幕右上角。
+The first build takes about a minute. The app is then copied to your Applications folder and started; the widget appears in the top-right corner of your screen.
 
-## 第一次使用
+## First launch
 
-1. **开机自启**：右键挂件，勾选「登录时打开」。
-2. **输入监控权限**（只有 Compx 鼠标接收器需要，其他设备不需要）：
-   - 系统会弹窗询问。点「打开系统设置」，在「隐私与安全性 → 输入监控」里打开 **Device Battery**。
-   - 如果系统提示「退出并重新打开」，点它。
-   - 这是 macOS 打开这类接收器时的要求，挂件不会读取你的任何按键。
-3. **通知权限**：第一次有设备电量低时，系统会问是否允许通知，允许后才能收到低电量提醒。
+1. **Start at login**: right-click the widget and turn on **Open at Login**.
+2. **Input Monitoring** (only needed for Compx mouse dongles):
+   - macOS shows a prompt. Click **Open System Settings** and, under **Privacy & Security → Input Monitoring**, turn on **Device Battery**.
+   - If macOS offers **Quit & Reopen**, click it.
+   - macOS requires this permission to open this kind of receiver. The widget never reads your keystrokes.
+3. **Notifications**: the first time a device runs low, macOS asks whether Device Battery may send notifications. Allow it to get low battery alerts.
 
-## 日常使用
+## Everyday use
 
-| 操作 | 作用 |
+| Action | What it does |
 | --- | --- |
-| 拖动挂件 | 移动位置，会被记住 |
-| 单击挂件 | 立即刷新电量 |
-| 右键挂件 | 重命名或隐藏设备、置于其他窗口之上、低电量提醒、登录时打开、退出 |
+| Drag the widget | Moves it; the position is remembered |
+| Click the widget | Refreshes all batteries now |
+| Right-click the widget | Rename or hide a device, keep above other windows, low battery alerts, open at login, quit |
 
-怎么看状态：
+Reading the widget:
 
-- **圆环**表示电量。正常时是中性色，≤20% 变橙色，≤10% 变红色，充电时变绿色。
-- **圆环右下角的小图标**：⚡ 充电中，🌙 休眠中（显示的是最后一次读到的电量），❗ 需要授权（单击这一行可以直接打开设置）。
-- 挂件可见时每分钟刷新一次，被窗口挡住时每 5 分钟刷新一次。插拔接收器、罗技接收器报告设备连接、Mac 从睡眠中唤醒时会立即刷新。
+- The **ring** shows the level. Neutral when healthy, orange at 20% or less, red at 10% or less, green while charging.
+- The **small badge** on the ring: ⚡ charging, 🌙 asleep (the level shown is the last one read), ❗ needs permission (click the row to open the settings).
+- The widget refreshes every minute while visible and every 5 minutes while covered by windows. Plugging in a receiver, a Logitech receiver reporting a device connection, and waking your Mac trigger an immediate refresh.
 
-## 常见问题
+## FAQ
 
-**设备一直显示「休眠」？**
-设备在休眠、关机，或者切换到了别的连接（比如罗技键盘的 Easy-Switch 切到了另一台电脑）。按一下按键或动一下鼠标唤醒，再单击挂件刷新即可。
+**A device always shows "Asleep".**
+It is sleeping, switched off, or connected elsewhere (for example, a Logitech keyboard switched to another computer with Easy-Switch). Press a key or move the mouse to wake it, then click the widget to refresh.
 
-**鼠标那一行一直提示「需要“输入监控”权限」？**
-到「系统设置 → 隐私与安全性 → 输入监控」打开 Device Battery，然后右键挂件「退出」，再重新打开 App。
+**The mouse row keeps saying "Needs Input Monitoring".**
+Turn on Device Battery under **System Settings → Privacy & Security → Input Monitoring**, then right-click the widget → **Quit Device Battery** and open the app again.
 
-**重新安装或更新后，鼠标又提示需要权限？**
-每次重新编译，App 的签名都会变，macOS 会把它当成新 App。在「输入监控」里选中 Device Battery，点下方的「−」删掉旧条目，再打开 App 按提示重新授权。只把旧条目的开关重新打开是没用的。
+**After reinstalling or updating, the mouse needs permission again.**
+Every build has a new signature, so macOS treats it as a new app. Under **Input Monitoring**, select Device Battery, click **−** below the list to remove the old entry, then open the app and allow it again. Switching the old entry back on has no effect.
 
-**我的设备没有出现？**
-目前只支持上面表格里的接收器。蓝牙设备要 macOS 自己能拿到电量才会显示（在「系统设置 → 蓝牙」里能看到电量的设备）。如果想支持别的设备，欢迎提 Issue，附上终端命令 `hidutil list` 的输出。
+**My device doesn't show up.**
+Only the receivers in the table above are supported. Bluetooth devices appear only if macOS itself knows their battery (you can see it in **System Settings → Bluetooth**). To ask for another device, open an issue and include the output of `hidutil list` from Terminal.
 
-**挂件被窗口挡住了？**
-挂件默认待在桌面层。可以用「显示桌面」手势查看，也可以右键勾选「置于其他窗口之上」。
+**How do I change the widget's language?**
+It follows your macOS language. To change it for this app only: **System Settings → General → Language & Region → Applications**, click **+**, choose Device Battery and a language, then quit and reopen the app.
 
-**安装脚本提示找不到 Swift？**
-先完成第 1 步 `xcode-select --install`。
+**The widget is hidden behind my windows.**
+It lives on the desktop layer by design. Use the "Show Desktop" gesture, or right-click and turn on **Keep Above Other Windows**.
 
-## 更新
+**The install script says Swift was not found.**
+Do Step 1 first: `xcode-select --install`.
+
+## Update
 
 ```bash
 cd DeviceBattery
@@ -110,51 +114,56 @@ git pull
 ./scripts/install.sh
 ```
 
-更新后如果鼠标提示需要权限，按上面「重新安装或更新后」那一条处理。
+If the mouse asks for permission afterwards, see "After reinstalling or updating" above.
 
-## 卸载
+## Uninstall
 
-1. 右键挂件 → 退出。
-2. 删除「应用程序」里的 Device Battery。
-3. 清除设置（可选）：
+1. Right-click the widget → **Quit Device Battery**.
+2. Delete Device Battery from your Applications folder.
+3. Optionally clear its settings:
 
    ```bash
    defaults delete local.DeviceBattery
    ```
 
-4. 在「系统设置」的「登录项」和「输入监控」里删除 Device Battery（如果之前添加过）。
+4. Remove Device Battery from **Login Items** and **Input Monitoring** in System Settings, if you added it there.
 
-## 隐私
+## Privacy
 
-- 不联网，不收集任何数据。
-- 只向接收器发送查询电量的指令。
-- 系统日志中的设备名称做了隐私处理。
+- No network access, no data collection.
+- Only battery status queries are sent to the receivers.
+- Device names are kept private in the system log.
 
-## 开发
+## Development
 
 ```bash
-./scripts/test.sh                                # 单元测试（Swift Testing）
-./scripts/build-app.sh                           # 只编译，生成 Device Battery.app，不安装
-.build/release/DeviceBattery --render-preview out.png   # 用示例数据渲染界面预览图
+./scripts/test.sh                      # unit tests (Swift Testing)
+./scripts/build-app.sh                 # build Device Battery.app without installing it
+.build/release/DeviceBattery --render-preview out.png --language en   # render a preview with sample devices (en / ko / zh-Hans)
 ```
 
 ```
-Sources/BatteryCore/     协议与状态逻辑（纯 Swift，有单元测试）
-  Logitech/              HID++ 帧、电池解码、接收器配对寄存器、读取器
-  Asus/                  ROG Omni 接收器
-  Compx/                 Compx 2.4G 接收器
-  Bluetooth/             system_profiler / IOKit 解析
-  Store/                 合并读数、保留休眠设备的最后电量、显示文案
-  Alerts/                低电量提醒策略
-Sources/DeviceBattery/   AppKit 挂件与 IOKit 连接层
-Tests/BatteryCoreTests/  单元测试
-scripts/                 安装、编译、测试、图标生成
+Sources/BatteryCore/     protocol and state logic (pure Swift, unit-tested)
+  Logitech/              HID++ framing, battery decoding, receiver pairing registers, reader
+  Asus/                  ROG Omni receiver
+  Compx/                 Compx 2.4 GHz receivers
+  Bluetooth/             system_profiler / IOKit parsing
+  Store/                 merges readings, keeps sleeping devices' last level, display text
+  Alerts/                low battery alert policy
+  Localization/          English / Korean / Chinese text
+Sources/DeviceBattery/   AppKit widget and IOKit glue
+Tests/BatteryCoreTests/  unit tests
+scripts/                 install, build, test, icon generation
 ```
 
-## 致谢
+## Acknowledgements
 
-各接收器的协议细节参考了这些开源项目：
+Protocol details were learned from these open-source projects (no code was copied):
 
-- 罗技 HID++：[Solaar](https://github.com/pwr-Solaar/Solaar)
-- ROG：[G-Helper](https://github.com/seerge/g-helper)、[rogctl](https://github.com/Humblemonk/rogctl)、[battery-tray](https://github.com/mikgangal/battery-tray)
-- Compx：[mouse-battery-reminder](https://github.com/245582001g-oss/mouse-battery-reminder)
+- Logitech HID++: [Solaar](https://github.com/pwr-Solaar/Solaar)
+- ROG: [G-Helper](https://github.com/seerge/g-helper), [rogctl](https://github.com/Humblemonk/rogctl), [battery-tray](https://github.com/mikgangal/battery-tray)
+- Compx: [mouse-battery-reminder](https://github.com/245582001g-oss/mouse-battery-reminder)
+
+## License
+
+[MIT](LICENSE) © 2026 Zhuoheng Li
