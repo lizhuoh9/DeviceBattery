@@ -1,0 +1,9 @@
+# SwiftPM build output and the app bundle the scripts produce
+.build/
+*.app
+
+# Editors and macOS
+.swiftpm/
+xcuserdata/
+DerivedData/
+.DS_Store
