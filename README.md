@@ -2,7 +2,7 @@
 
 **English** | [한국어](README.ko.md) | [简体中文](README.zh-CN.md)
 
-A lightweight macOS desktop widget that shows, at a glance, the battery of your wireless mice, keyboards and headphones — including 2.4 GHz receivers that macOS itself cannot read.
+A lightweight desktop widget for macOS and Windows that shows, at a glance, the battery of your wireless mice, keyboards and headphones — including 2.4 GHz receivers that macOS itself cannot read.
 
 ![Device Battery preview](docs/preview-en.png)
 
@@ -29,7 +29,7 @@ A lightweight macOS desktop widget that shows, at a glance, the battery of your 
 
 The widget only sends read-only "battery status" queries and never changes any device setting.
 
-## Install (3 steps)
+## Install on macOS (3 steps)
 
 Requires macOS 14 or later. There is no prebuilt download yet: you build the app once on your own Mac. An app built on your Mac is not blocked by Gatekeeper, so it opens with a double-click.
 
@@ -60,7 +60,7 @@ Or click the green **Code → Download ZIP** button on this page, unzip it, and 
 
 The first build takes about a minute. The app is then copied to your Applications folder and started; the widget appears in the top-right corner of your screen.
 
-## First launch
+## First launch on macOS
 
 1. **Start at login**: right-click the widget and turn on **Open at Login**.
 2. **Input Monitoring** (only needed for Compx mouse dongles):
@@ -68,6 +68,25 @@ The first build takes about a minute. The app is then copied to your Application
    - If macOS offers **Quit & Reopen**, click it.
    - macOS requires this permission to open this kind of receiver. The widget never reads your keystrokes.
 3. **Notifications**: the first time a device runs low, macOS asks whether Device Battery may send notifications. Allow it to get low battery alerts.
+
+## Windows (beta)
+
+A Windows version with the same receiver support lives in [`windows/`](windows/): a single `DeviceBattery.exe` of about 1 MB, with no installer and no runtime to install.
+
+> **Beta.** It is built and tested automatically on Windows, but has not yet been checked against real receivers. Please [open an issue](https://github.com/lizhuoh9/DeviceBattery/issues) to report what works and what doesn't.
+
+1. Download `DeviceBattery.exe` from [Releases](https://github.com/lizhuoh9/DeviceBattery/releases) and keep it in a folder of your choice (e.g. Documents).
+2. Double-click it. The exe is not code-signed, so SmartScreen may say "Windows protected your PC": click **More info → Run anyway** (first time only).
+3. The widget appears in the top-right corner, plus an icon in the notification area. Right-click either one for the menu, and turn on **Start with Windows** there.
+
+Differences from macOS:
+
+- No permission prompts: Windows lets the widget read the receivers directly.
+- Bluetooth devices show the single level Windows reports (no separate earbud and case levels).
+- The widget sits behind your windows; click the tray icon to show or hide it.
+- Missing a device? Right-click → **Device Report…** and attach the text file to an issue.
+
+To build it yourself, install [Rust](https://rustup.rs) and run `cargo build --release` in the `windows` folder.
 
 ## Everyday use
 
@@ -154,6 +173,7 @@ Sources/BatteryCore/     protocol and state logic (pure Swift, unit-tested)
 Sources/DeviceBattery/   AppKit widget and IOKit glue
 Tests/BatteryCoreTests/  unit tests
 scripts/                 install, build, test, icon generation
+windows/                 the Windows version (Rust; shares the protocol logic, unit-tested)
 ```
 
 ## Acknowledgements

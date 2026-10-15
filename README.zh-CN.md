@@ -2,7 +2,7 @@
 
 [English](README.md) | [한국어](README.ko.md) | **简体中文**
 
-一个轻量的 macOS 桌面挂件，一眼看到无线鼠标、键盘、耳机的电量。macOS 自己读不到的 2.4G 接收器设备也能显示。
+一个轻量的 macOS / Windows 桌面挂件，一眼看到无线鼠标、键盘、耳机的电量。macOS 自己读不到的 2.4G 接收器设备也能显示。
 
 ![Device Battery 预览](docs/preview-zh-Hans.png)
 
@@ -29,7 +29,7 @@
 
 挂件只向设备发送「查询电量」一类的读取指令，不会修改任何设备设置。
 
-## 安装（3 步）
+## macOS 安装（3 步）
 
 需要 macOS 14 或更新版本。目前没有现成的安装包，需要在自己的 Mac 上编译一次。编译出来的 App 不会被 macOS 拦截，双击就能打开。
 
@@ -60,7 +60,7 @@ cd DeviceBattery
 
 第一次编译大约需要 1 分钟。完成后 App 会被装到「应用程序」文件夹并自动启动，挂件出现在屏幕右上角。
 
-## 第一次使用
+## macOS 第一次使用
 
 1. **开机自启**：右键挂件，勾选「登录时打开」。
 2. **输入监控权限**（只有 Compx 鼠标接收器需要，其他设备不需要）：
@@ -68,6 +68,25 @@ cd DeviceBattery
    - 如果系统提示「退出并重新打开」，点它。
    - 这是 macOS 打开这类接收器时的要求，挂件不会读取你的任何按键。
 3. **通知权限**：第一次有设备电量低时，系统会问是否允许通知，允许后才能收到低电量提醒。
+
+## Windows（测试版）
+
+同样支持这几种接收器的 Windows 版在 [`windows/`](windows/) 文件夹里：只有一个约 1 MB 的 `DeviceBattery.exe`，不需要安装，也不需要额外的运行库。
+
+> **测试版。** 已在 Windows 上自动编译和测试，但还没有用真实接收器验证过。欢迎通过 [Issue](https://github.com/lizhuoh9/DeviceBattery/issues) 反馈哪些能用、哪些不能用。
+
+1. 在 [Releases](https://github.com/lizhuoh9/DeviceBattery/releases) 下载 `DeviceBattery.exe`，放在一个固定的文件夹（例如「文档」）。
+2. 双击运行。因为没有代码签名，SmartScreen 可能提示「Windows 已保护你的电脑」，点 **更多信息 → 仍要运行**（只有第一次）。
+3. 挂件出现在屏幕右上角，通知区域也会出现图标。右键任意一个打开菜单，勾选 **开机时启动**。
+
+和 macOS 版的不同：
+
+- 没有权限弹窗：Windows 允许挂件直接读取接收器。
+- 蓝牙设备只显示 Windows 提供的一个电量（不分左右耳和充电盒）。
+- 挂件在其他窗口后面，点托盘图标可以显示或隐藏。
+- 看不到某个设备？右键 → **设备诊断报告…**，把文本文件附在 Issue 里。
+
+想自己编译：安装 [Rust](https://rustup.rs) 后，在 `windows` 文件夹里运行 `cargo build --release`。
 
 ## 日常使用
 
@@ -154,6 +173,7 @@ Sources/BatteryCore/     协议与状态逻辑（纯 Swift，有单元测试）
 Sources/DeviceBattery/   AppKit 挂件与 IOKit 连接层
 Tests/BatteryCoreTests/  单元测试
 scripts/                 安装、编译、测试、图标生成
+windows/                 Windows 版（Rust，协议逻辑相同，有单元测试）
 ```
 
 ## 致谢

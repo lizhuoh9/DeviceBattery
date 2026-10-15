@@ -7,3 +7,6 @@
 xcuserdata/
 DerivedData/
 .DS_Store
+
+# Windows (Rust) build output
+windows/target/
