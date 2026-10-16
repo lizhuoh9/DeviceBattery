@@ -10,3 +10,10 @@ DerivedData/
 
 # Windows (Rust) build output
 windows/target/
+
+# Windows smoke-test output: the previews, the device report and the desktop photo a local
+# run or the CI smoke test writes next to the crate
+windows/preview-*.png
+windows/desktop.png
+windows/devices.txt
+windows/widget-corner.png
