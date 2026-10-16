@@ -82,7 +82,7 @@ A Windows version with the same receiver support lives in [`windows/`](windows/)
 Differences from macOS:
 
 - No permission prompts: Windows lets the widget read the receivers directly.
-- Bluetooth devices show the single level Windows reports (no separate earbud and case levels).
+- Bluetooth devices show the single level Windows reports (no separate earbud and case levels). A device that is paired but not connected stays in the list as **Asleep**, with the last level Windows kept for it.
 - The widget sits behind your windows; click the tray icon to show or hide it.
 - Missing a device? Right-click → **Device Report…** and attach the text file to an issue.
 
