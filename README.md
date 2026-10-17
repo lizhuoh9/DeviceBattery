@@ -8,6 +8,9 @@ A lightweight macOS desktop widget that shows, at a glance, the battery of your 
 
 <sub>Light and dark appearance. On your Mac the background is macOS glass, so your wallpaper shows through.</sub>
 
+**Windows version:** the same widget for Windows lives in a separate repository,
+[DeviceBattery-Windows](https://github.com/lizhuoh9/DeviceBattery-Windows).
+
 ## Features
 
 - **Reads batteries macOS can't**: talks directly to Logitech Bolt / Unifying receivers, the ROG Omni receiver and Compx-chip 4K/8K mouse dongles.

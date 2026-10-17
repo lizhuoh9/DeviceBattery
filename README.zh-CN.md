@@ -8,6 +8,8 @@
 
 <sub>示意图：浅色 / 深色外观。实际使用时背景是 macOS 的玻璃材质，会透出桌面壁纸。</sub>
 
+**Windows 版：** 同样的挂件还有一个 Windows 版本，放在单独的仓库里：[DeviceBattery-Windows](https://github.com/lizhuoh9/DeviceBattery-Windows)。
+
 ## 它能做什么
 
 - **读出 macOS 读不到的电量**：罗技 Bolt / Unifying 接收器、ROG Omni 接收器、Compx 芯片的 4K/8K 鼠标接收器，直接和接收器通信读取电量。

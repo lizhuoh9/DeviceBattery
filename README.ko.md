@@ -8,6 +8,8 @@
 
 <sub>라이트 / 다크 모드 예시입니다. 실제로는 macOS 글래스 재질 배경이라 바탕화면이 비쳐 보입니다.</sub>
 
+**Windows 버전:** 같은 위젯의 Windows 버전은 별도 저장소에 있습니다: [DeviceBattery-Windows](https://github.com/lizhuoh9/DeviceBattery-Windows).
+
 ## 주요 기능
 
 - **macOS가 못 읽는 배터리도 표시**: 로지텍 Bolt / Unifying 리시버, ROG Omni 리시버, Compx 칩 4K/8K 마우스 리시버와 직접 통신해 배터리를 읽습니다.
